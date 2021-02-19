@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/frg2089/pixivcs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Pixiv PixivAPI</PackageTags>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".gitattributes" />
