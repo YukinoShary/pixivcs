@@ -85,6 +85,8 @@ namespace PixivCS
         public string RefreshToken { get; internal set; }
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
+        public static string CodeVerify { get; set; }
+        public static string Code { get; set; }
 
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
             bool ExperimentalConnection = false)
@@ -262,6 +264,18 @@ namespace PixivCS
         }
 
         /// <summary>
+        /// 获取带有Code Challenge的WebView登录链接
+        /// </summary>
+        /// <returns></returns>
+        public static Uri GenerateWebViewUri()
+        {
+            CodeVerify = OAuthUtil.GenerateCodeVerify();
+            string codeChallenge = OAuthUtil.GenerateCodeChallenge(CodeVerify);
+            string uri = "https://app-api.pixiv.net/web/v1/login?code_challenge=" + codeChallenge + "&code_challenge_method=S256&client=pixiv-android";
+            return new Uri(uri);
+        }
+
+        /// <summary>
         /// 用户名和密码登录
         /// </summary>
         /// <remarks>
@@ -271,6 +285,7 @@ namespace PixivCS
         /// <exception cref="PixivException">尚不明确的其他错误</exception>
         /// <exception cref="PixivAuthException">用户名密码错误</exception>
         /// <exception cref="HttpRequestException">Http连接失败()</exception>
+        [Obsolete("Use WebView&CodeChallenge method instead")]
         public async Task<Objects.AuthResult> AuthAsync(string Username, string Password)
         {
             string time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
@@ -341,6 +356,34 @@ namespace PixivCS
             UserID = resJSON.Response.User.Id;
             RefreshToken = resJSON.Response.RefreshToken;
             return resJSON;
+        }
+
+        public async Task<Objects.AuthResult> Code2Token()
+        {
+            string time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
+            Dictionary<string, string> headers = new Dictionary<string, string>
+            {
+                { "X-Client-Time", time},
+                { "X-Client-Hash", MD5Hash(time+ hashSecret)},
+                { "User-Agent", "PixivAndroidApp/5.0.155 (Android 6.0; Pixel C)"},
+                { "App-OS", "Android"},
+                { "App-OS-Version", "Android 6.0"},
+                { "App-Version", "5.0.166"},
+                { "Host", "oauth.secure.pixiv.net"},
+                { "Content-Type", "application/x-www-form-urlencoded"},
+                { "Accept-Language","zh-CN"}
+            };
+            Dictionary<string, string> body = new Dictionary<string, string>
+            {
+                { "client_id", clientID },
+                { "client_secret", clientSecret },
+                { "code", Code },
+                { "code_verifier", CodeVerify },
+                { "redirect_uri", "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback" },
+                { "grant_type", "authorization_code" },
+                { "include_policy", "true" }
+            };
+            return await AuthAsync(headers, body);
         }
 
         /// <summary>
