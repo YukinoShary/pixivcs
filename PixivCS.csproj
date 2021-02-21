@@ -2,13 +2,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.6.0-dev</Version>
-    <Authors>frg2089 &amp; TobiichiAmane</Authors>
-    <Company />
+    <Version>0.7.0-dev</Version>
+    <Authors>YukinoShary &amp; frg2089 &amp; TobiichiAmane</Authors>
+    <Company>YukinoShary &amp; frg2089 &amp; TobiichiAmane</Company>
     <Description>C# version of Pixiv API in .NET Standard 2.0.</Description>
     <PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/frg2089/pixivcs</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/frg2089/pixivcs</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/YukinoShary/pixivcs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/YukinoShary/pixivcs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Pixiv PixivAPI</PackageTags>
     <OutputType>Library</OutputType>

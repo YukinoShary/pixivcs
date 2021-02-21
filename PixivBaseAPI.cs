@@ -85,8 +85,8 @@ namespace PixivCS
         public string RefreshToken { get; internal set; }
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
-        public static string CodeVerify { get; set; }
-        public static string Code { get; set; }
+        public string CodeVerify { get; internal set; }
+        public string Code { get; internal set; }
 
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
             bool ExperimentalConnection = false)
@@ -267,7 +267,7 @@ namespace PixivCS
         /// 获取带有Code Challenge的WebView登录链接
         /// </summary>
         /// <returns></returns>
-        public static Uri GenerateWebViewUri()
+        public Uri GenerateWebViewUri()
         {
             CodeVerify = OAuthUtil.GenerateCodeVerify();
             string codeChallenge = OAuthUtil.GenerateCodeChallenge(CodeVerify);
@@ -285,7 +285,7 @@ namespace PixivCS
         /// <exception cref="PixivException">尚不明确的其他错误</exception>
         /// <exception cref="PixivAuthException">用户名密码错误</exception>
         /// <exception cref="HttpRequestException">Http连接失败()</exception>
-        [Obsolete("Use WebView&CodeChallenge method instead")]
+        [Obsolete("Use WebView&Code2Token method instead")]
         public async Task<Objects.AuthResult> AuthAsync(string Username, string Password)
         {
             string time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
@@ -358,7 +358,7 @@ namespace PixivCS
             return resJSON;
         }
 
-        public async Task<Objects.AuthResult> Code2Token()
+        public async Task<Objects.AuthResult> Code2Token(string code)
         {
             string time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
             Dictionary<string, string> headers = new Dictionary<string, string>
@@ -377,7 +377,7 @@ namespace PixivCS
             {
                 { "client_id", clientID },
                 { "client_secret", clientSecret },
-                { "code", Code },
+                { "code", code },
                 { "code_verifier", CodeVerify },
                 { "redirect_uri", "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback" },
                 { "grant_type", "authorization_code" },

@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace PixivCS.Utils
 {
-    public class OAuthUtil
+    internal static class OAuthUtil
     {
         private static readonly char[] padding = { '=' };
         
