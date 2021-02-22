@@ -85,7 +85,7 @@ namespace PixivCS
             {"210.140.92.142","F4A431620F42E4D10EB42621C6948E3CD5014FB0" }
         };
 
-        public string AccessToken { get; set; }
+        public string AccessToken { get; internal set; }
         public string RefreshToken { get; internal set; }
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
@@ -132,7 +132,7 @@ namespace PixivCS
             Dictionary<string, string> Headers = null, List<(string, string)> Query = null,
             HttpContent Body = null)
         {
-            string queryUrl = Url + '?' + ((Query != null) ? GetQueryString(Query) : "");
+            string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
             if (ExperimentalConnection && TargetIPs.ContainsKey(new Uri(queryUrl).Host))
             {
                 #region 无  底  深  坑
