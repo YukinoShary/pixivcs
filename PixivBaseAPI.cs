@@ -38,6 +38,10 @@ namespace PixivCS
         // https://stackoverflow.com/questions/15705092/do-httpclient-and-httpclienthandler-have-to-be-disposed
         private static HttpClient _client = new HttpClient();
 
+        //需要客户端实现以下ClientLog方法以输出httpclient request log
+        public delegate Task ClientOutput(byte[] b);
+        public ClientOutput ClientLog { get; set; }
+
         //允许设置代理
         public static void SetProxy(IWebProxy Proxy)
         {
@@ -81,7 +85,7 @@ namespace PixivCS
             {"210.140.92.142","F4A431620F42E4D10EB42621C6948E3CD5014FB0" }
         };
 
-        public string AccessToken { get; internal set; }
+        public string AccessToken { get; set; }
         public string RefreshToken { get; internal set; }
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
@@ -89,25 +93,30 @@ namespace PixivCS
         public string Code { get; internal set; }
 
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
-            bool ExperimentalConnection = false)
+            ClientOutput ClientLog, bool ExperimentalConnection = false)
         {
             this.AccessToken = AccessToken;
             this.RefreshToken = RefreshToken;
             this.UserID = UserID;
+            this.ClientLog = ClientLog;
             this.ExperimentalConnection = ExperimentalConnection;
         }
 
-        public PixivBaseAPI() : this(null, null, null) { }
+        public PixivBaseAPI() : this(null, null, null, null) { }
 
         public PixivBaseAPI(PixivBaseAPI BaseAPI) :
-            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection)
+            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ClientLog, BaseAPI.ExperimentalConnection)
         { }
 
         //用于生成带参数的url
         private static string GetQueryString(List<(string, string)> query)
-            => string.Join("&", query.Select(i => $"{HttpUtility.UrlEncode(i.Item1)}={HttpUtility.UrlEncode(i.Item2)}"));
-        private static string GetQueryString(Dictionary<string, string> query)
-            => string.Join("&", query.Select(i => $"{HttpUtility.UrlEncode(i.Key)}={HttpUtility.UrlEncode(i.Value)}"));
+        {
+            var array = (from i in query
+                         select string.Format("{0}={1}", HttpUtility.UrlEncode(i.Item1),
+                         HttpUtility.UrlEncode(i.Item2)))
+                .ToArray();
+            return "?" + string.Join("&", array);
+        }
 
         /// <summary>
         /// 登录验证
@@ -123,7 +132,7 @@ namespace PixivCS
             Dictionary<string, string> Headers = null, List<(string, string)> Query = null,
             HttpContent Body = null)
         {
-            string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
+            string queryUrl = Url + '?' + ((Query != null) ? GetQueryString(Query) : "");
             if (ExperimentalConnection && TargetIPs.ContainsKey(new Uri(queryUrl).Host))
             {
                 #region 无  底  深  坑
@@ -135,6 +144,7 @@ namespace PixivCS
                     cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP))
                 {
                     var httpRequest = await Utilities.ConstructHTTPAsync(Method, queryUrl, Headers, Body);
+                    await ClientLog(httpRequest);
                     await connection.WriteAsync(httpRequest, 0, httpRequest.Length);
                     using (var memory = new MemoryStream())
                     {
@@ -227,6 +237,7 @@ namespace PixivCS
                         }
                         var res = new HttpResponseMessage();
                         res.Content = new ByteArrayContent(result);
+                        await ClientLog(result);
                         foreach (var pair in headersDictionary)
                         {
                             var added = res.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
@@ -251,7 +262,6 @@ namespace PixivCS
 
                 if (Body != null)
                     request.Content = Body;
-
                 return await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             }
         }

@@ -12,8 +12,8 @@ namespace PixivCS
 {
     public class PixivAppAPI : PixivBaseAPI
     {
-        public PixivAppAPI(string AccessToken, string RefreshToken, string UserID, bool ExperimentalConnection = false) :
-            base(AccessToken, RefreshToken, UserID, ExperimentalConnection)
+        public PixivAppAPI(string AccessToken, string RefreshToken, string UserID,ClientOutput ClientLog, bool ExperimentalConnection = false) :
+            base(AccessToken, RefreshToken, UserID, ClientLog, ExperimentalConnection)
         { }
 
         public PixivAppAPI() : base() { }
@@ -27,10 +27,10 @@ namespace PixivCS
             var headers = Headers ?? new Dictionary<string, string>();
             if (!(headers.ContainsKey("User-Agent") || headers.ContainsKey("user-agent")))
             {
-                headers.Add("App-OS", "ios");
-                headers.Add("App-OS-Version", "10.3.1");
-                headers.Add("App-Version", "6.7.1");
-                headers.Add("User-Agent", "PixivIOSApp/6.7.1 (iOS 10.3.1; iPhone8,1)");
+                headers.Add("App-OS", "Android");
+                headers.Add("App-OS-Version", "Android 6.0");
+                headers.Add("App-Version", "5.0.166");
+                headers.Add("User-Agent", "PixivAndroidApp/5.0.155 (Android 6.0; Pixel C)");
             }
             if (RequireAuth) headers.Add("Authorization", string.Format("Bearer {0}", AccessToken));
             return await base.RequestCall(Method, Url, headers, Query, Body);
@@ -43,7 +43,7 @@ namespace PixivCS
         /// <param name="Filter"></param>
         /// <param name="RequireAuth"></param>
         /// <returns></returns>
-        public async Task<Objects.UserDetail> GetUserDetailAsync(string UserID, string Filter = "for_ios",
+        public async Task<Objects.UserDetail> GetUserDetailAsync(string UserID, string Filter = "for_android",
             bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/user/detail";
@@ -199,7 +199,7 @@ namespace PixivCS
         /// <param name="SeedIllustIDs"></param>
         /// <param name="RequireAuth"></param>
         /// <returns></returns>
-        public async Task<Objects.UserIllusts> GetIllustRelatedAsync(string IllustID, string Filter = "for_ios",
+        public async Task<Objects.UserIllusts> GetIllustRelatedAsync(string IllustID, string Filter = "for_android",
             List<string> SeedIllustIDs = null, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v2/illust/related";
@@ -277,7 +277,7 @@ namespace PixivCS
         /// <param name="Offset"></param>
         /// <param name="RequireAuth"></param>
         /// <returns></returns>
-        public async Task<Objects.UserIllusts> GetIllustRankingAsync(string Mode = "day", string Filter = "for_ios",
+        public async Task<Objects.UserIllusts> GetIllustRankingAsync(string Mode = "day", string Filter = "for_android",
             string Date = null, string Offset = null, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/illust/ranking";
@@ -293,7 +293,7 @@ namespace PixivCS
         }
 
         //趋势标签
-        public async Task<Objects.TrendingTagsIllust> GetTrendingTagsIllustAsync(string Filter = "for_ios", bool RequireAuth = true)
+        public async Task<Objects.TrendingTagsIllust> GetTrendingTagsIllustAsync(string Filter = "for_android", bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/trending-tags/illust";
             List<(string, string)> query = new List<(string, string)>
@@ -532,7 +532,7 @@ namespace PixivCS
         /// <param name="Offset"></param>
         /// <param name="RequireAuth"></param>
         /// <returns></returns>
-        public async Task<Objects.UserList> GetUserListAsync(string UserID, string Filter = "for_ios",
+        public async Task<Objects.UserList> GetUserListAsync(string UserID, string Filter = "for_android",
             string Offset = null, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v2/user/list";
