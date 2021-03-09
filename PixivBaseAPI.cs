@@ -144,7 +144,8 @@ namespace PixivCS
                     cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP))
                 {
                     var httpRequest = await Utilities.ConstructHTTPAsync(Method, queryUrl, Headers, Body);
-                    await ClientLog(httpRequest);
+                    if(ClientLog != null) 
+                        await ClientLog(httpRequest);
                     await connection.WriteAsync(httpRequest, 0, httpRequest.Length);
                     using (var memory = new MemoryStream())
                     {
@@ -237,7 +238,8 @@ namespace PixivCS
                         }
                         var res = new HttpResponseMessage();
                         res.Content = new ByteArrayContent(result);
-                        await ClientLog(result);
+                        if (ClientLog != null)
+                            await ClientLog(httpRequest);
                         foreach (var pair in headersDictionary)
                         {
                             var added = res.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
