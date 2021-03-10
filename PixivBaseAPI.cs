@@ -92,6 +92,7 @@ namespace PixivCS
         public string CodeVerify { get; internal set; }
         public string Code { get; internal set; }
         public DateTime AccessTime { get; internal set; }
+        public long ExpireTime { get; internal set; }
 
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
             ClientOutput ClientLog, bool ExperimentalConnection = false)
@@ -101,6 +102,7 @@ namespace PixivCS
             this.UserID = UserID;
             this.ClientLog = ClientLog;
             this.ExperimentalConnection = ExperimentalConnection;
+            ExpireTime = 0;
         }
 
         public PixivBaseAPI() : this(null, null, null, null) { }
@@ -369,6 +371,7 @@ namespace PixivCS
             AccessToken = resJSON.Response.AccessToken;
             UserID = resJSON.Response.User.Id;
             RefreshToken = resJSON.Response.RefreshToken;
+            ExpireTime = resJSON.Response.ExpiresIn;
             return resJSON;
         }
 
@@ -404,19 +407,6 @@ namespace PixivCS
                 { "include_policy", "true" }
             };
             return await AuthAsync(headers, body);
-        }
-
-        /// <summary>
-        /// 执行请求前调用此方法，确保AccessToken可在失效前(3600s)执行更新；在执行过一次登录后才能调用此方法
-        /// </summary>
-        /// <returns></returns>
-        public async Task CheckAccessToken()
-        {
-            TimeSpan now = new TimeSpan(DateTime.UtcNow.Ticks);
-            if (now.Subtract(new TimeSpan(AccessTime.Ticks)).Duration().Seconds >= 10)
-            {
-                await AuthAsync(RefreshToken);
-            }
         }
 
         /// <summary>

@@ -46,6 +46,10 @@ namespace PixivCS
         public async Task<Objects.UserDetail> GetUserDetailAsync(string UserID, string Filter = "for_android",
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/detail";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -68,6 +72,10 @@ namespace PixivCS
         public async Task<Objects.UserIllusts> GetUserIllustsAsync(string UserID, string IllustType = "illust",
             string Filter = "for_ios", string Offset = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/illusts";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -94,6 +102,10 @@ namespace PixivCS
             string Filter = "for_ios", string MaxBookmarkID = null, string Tag = null,
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/bookmarks/illust";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -117,6 +129,10 @@ namespace PixivCS
         public async Task<Objects.UserIllusts> GetIllustFollowAsync(string Restrict = "public", string Offset = null,
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v2/illust/follow";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -135,6 +151,10 @@ namespace PixivCS
         /// <returns></returns>
         public async Task<Objects.IllustDetail> GetIllustDetailAsync(string IllustID, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/illust/detail";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -155,6 +175,10 @@ namespace PixivCS
         public async Task<Objects.IllustComments> GetIllustCommentsAsync(string IllustID, string Offset = null,
             bool? IncludeTotalComments = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/illust/comments";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -178,6 +202,10 @@ namespace PixivCS
         public async Task<Objects.IllustCommentAddResult> PostIllustCommentAddAsync(string IllustID, string Comment,
             string ParentCommentID = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/illust/comment/add";
             Dictionary<string, string> data = new Dictionary<string, string>
             {
@@ -202,6 +230,10 @@ namespace PixivCS
         public async Task<Objects.UserIllusts> GetIllustRelatedAsync(string IllustID, string Filter = "for_android",
             List<string> SeedIllustIDs = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v2/illust/related";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -238,6 +270,10 @@ namespace PixivCS
             bool? IncludeRankingIllusts = null, List<string> BookmarkIllustIDs = null,
             string IncludePrivacyPolicy = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = RequireAuth ? "https://app-api.pixiv.net/v1/illust/recommended" :
                 "https://app-api.pixiv.net/v1/illust/recommended-nologin";
             List<(string, string)> query = new List<(string, string)>
@@ -280,6 +316,10 @@ namespace PixivCS
         public async Task<Objects.UserIllusts> GetIllustRankingAsync(string Mode = "day", string Filter = "for_android",
             string Date = null, string Offset = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/illust/ranking";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -295,6 +335,10 @@ namespace PixivCS
         //趋势标签
         public async Task<Objects.TrendingTagsIllust> GetTrendingTagsIllustAsync(string Filter = "for_android", bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/trending-tags/illust";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -324,6 +368,10 @@ namespace PixivCS
             string Sort = "date_desc", string Duration = null, string Filter = "for_ios", string Offset = null,
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/search/illust";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -346,6 +394,10 @@ namespace PixivCS
         /// <returns></returns>
         public async Task<Objects.IllustBookmarkDetail> GetIllustBookmarkDetailAsync(string IllustID, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v2/illust/bookmark/detail";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -366,6 +418,10 @@ namespace PixivCS
         public async Task PostIllustBookmarkAddAsync(string IllustID, string Restrict = "public",
             List<string> Tags = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v2/illust/bookmark/add";
             Dictionary<string, string> data = new Dictionary<string, string>
             {
@@ -391,6 +447,10 @@ namespace PixivCS
         /// <returns></returns>
         public async Task PostIllustBookmarkDeleteAsync(string IllustID, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/illust/bookmark/delete";
             Dictionary<string, string> data = new Dictionary<string, string>
             {
@@ -410,6 +470,10 @@ namespace PixivCS
         public async Task<Objects.UserBookmarkTags> GetUserBookmarkTagsIllustAsync(string Restrict = "public", string Offset = null,
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/bookmark-tags/illust";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -431,6 +495,10 @@ namespace PixivCS
         public async Task<Objects.UserFollowList> GetUserFollowingAsync(string UserID, string Restrict = "public",
             string Offset = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/following";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -453,6 +521,10 @@ namespace PixivCS
         public async Task<Objects.UserFollowList> GetUserFollowerAsync(string UserID, string Restrict = "public",
             string Offset = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/follower";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -474,6 +546,10 @@ namespace PixivCS
         public async Task PostUserFollowAddAsync(string UserID, string Restrict = "public",
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/follow/add";
             Dictionary<string, string> data = new Dictionary<string, string>
             {
@@ -494,6 +570,10 @@ namespace PixivCS
         public async Task PostUserFollowDeleteAsync(string UserID, string Restrict = "public",
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/follow/delete";
             Dictionary<string, string> data = new Dictionary<string, string>
             {
@@ -514,6 +594,10 @@ namespace PixivCS
         public async Task<Objects.UserFollowList> GetUserMyPixivAsync(string UserID, string Offset = null,
             bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/user/mypixiv";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -535,6 +619,10 @@ namespace PixivCS
         public async Task<Objects.UserList> GetUserListAsync(string UserID, string Filter = "for_android",
             string Offset = null, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v2/user/list";
             List<(string, string)> query = new List<(string, string)>
             {
@@ -554,6 +642,10 @@ namespace PixivCS
         /// <returns></returns>
         public async Task<Objects.UgoiraMetadata> GetUgoiraMetadataAsync(string IllustID, bool RequireAuth = true)
         {
+            if ((DateTime.UtcNow - AccessTime).TotalSeconds >= ExpireTime && RequireAuth)
+            {
+                await AuthAsync(RefreshToken);
+            }
             string url = "https://app-api.pixiv.net/v1/ugoira/metadata";
             List<(string, string)> query = new List<(string, string)>
             {
