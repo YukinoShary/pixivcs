@@ -91,6 +91,7 @@ namespace PixivCS
         public bool ExperimentalConnection { get; set; }
         public string CodeVerify { get; internal set; }
         public string Code { get; internal set; }
+        public DateTime AccessTime { get; internal set; }
 
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
             ClientOutput ClientLog, bool ExperimentalConnection = false)
@@ -239,7 +240,7 @@ namespace PixivCS
                         var res = new HttpResponseMessage();
                         res.Content = new ByteArrayContent(result);
                         if (ClientLog != null)
-                            await ClientLog(httpRequest);
+                            await ClientLog(result);
                         foreach (var pair in headersDictionary)
                         {
                             var added = res.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
@@ -343,6 +344,7 @@ namespace PixivCS
                 { "grant_type", "refresh_token" },
                 { "refresh_token", RefreshToken }
             };
+            AccessTime = DateTime.UtcNow;
             return await AuthAsync(headers, data);
         }
 
@@ -370,13 +372,19 @@ namespace PixivCS
             return resJSON;
         }
 
+        /// <summary>
+        ///  使用WebView登录后返回的code完成最后的登录步骤
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public async Task<Objects.AuthResult> Code2Token(string code)
         {
-            string time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
+            AccessTime = DateTime.UtcNow;
+            string time = AccessTime.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
             Dictionary<string, string> headers = new Dictionary<string, string>
             {
                 { "X-Client-Time", time},
-                { "X-Client-Hash", MD5Hash(time+ hashSecret)},
+                { "X-Client-Hash", MD5Hash(time + hashSecret)},
                 { "User-Agent", "PixivAndroidApp/5.0.155 (Android 6.0; Pixel C)"},
                 { "App-OS", "Android"},
                 { "App-OS-Version", "Android 6.0"},
@@ -396,6 +404,19 @@ namespace PixivCS
                 { "include_policy", "true" }
             };
             return await AuthAsync(headers, body);
+        }
+
+        /// <summary>
+        /// 执行请求前调用此方法，确保AccessToken可在失效前(3600s)执行更新；在执行过一次登录后才能调用此方法
+        /// </summary>
+        /// <returns></returns>
+        public async Task CheckAccessToken()
+        {
+            TimeSpan now = new TimeSpan(DateTime.UtcNow.Ticks);
+            if (now.Subtract(new TimeSpan(AccessTime.Ticks)).Duration().Seconds >= 10)
+            {
+                await AuthAsync(RefreshToken);
+            }
         }
 
         /// <summary>
