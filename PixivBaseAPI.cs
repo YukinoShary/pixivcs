@@ -259,15 +259,37 @@ namespace PixivCS
                 var allowMethods = new string[] { "get", "post" };
                 if (!allowMethods.Any(m => m.Equals(Method, StringComparison.OrdinalIgnoreCase)))
                     throw new PixivException("Unsupported method");
-
+                
                 var request = new HttpRequestMessage(new HttpMethod(Method), queryUrl);
-                if (Headers != null)
-                    foreach (var pair in Headers)
-                        request.Headers.Add(pair.Key, pair.Value);
-
+                string bodyStr;
+                
+                if (!Headers.ContainsKey("Host"))
+                    Headers.Add("Host", new Uri(Url).Host);
+                if (!Headers.ContainsKey("Cache-Control"))
+                    Headers.Add("Cache-Control", "no-cache");
+                if (!Headers.ContainsKey("Connection"))
+                    Headers.Add("Connection", "Keep-Alive");
+                foreach (var pair in Headers)
+                    request.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
                 if (Body != null)
                     request.Content = Body;
-                return await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                if (Method.Equals("POST"))
+                {
+                    switch (Body)
+                    {
+                        case FormUrlEncodedContent form:
+                            bodyStr = await form.ReadAsStringAsync();
+                            if (!Headers.ContainsKey("Content-Length"))
+                                request.Content.Headers.ContentLength = Encoding.UTF8.GetByteCount(bodyStr);
+                            break;
+                        default:
+                            throw new PixivException("Unsupported content type");
+                    }
+                }
+                var result = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                if(ClientLog != null)
+                    await ClientLog(await result.Content.ReadAsByteArrayAsync());
+                return result;
             }
         }
 
