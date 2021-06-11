@@ -147,8 +147,6 @@ namespace PixivCS
                     cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP))
                 {
                     var httpRequest = await Utilities.ConstructHTTPAsync(Method, queryUrl, Headers, Body);
-                    if(ClientLog != null) 
-                        await ClientLog(httpRequest);
                     await connection.WriteAsync(httpRequest, 0, httpRequest.Length);
                     using (var memory = new MemoryStream())
                     {
@@ -244,8 +242,6 @@ namespace PixivCS
                         }
                         var res = new HttpResponseMessage();
                         res.Content = new ByteArrayContent(result);
-                        if (ClientLog != null)
-                            await ClientLog(result);
                         foreach (var pair in headersDictionary)
                         {
                             var added = res.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
@@ -290,8 +286,6 @@ namespace PixivCS
                     }
                 }
                 var result = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                if(ClientLog != null)
-                    await ClientLog(await result.Content.ReadAsByteArrayAsync());
                 return result;
             }
         }

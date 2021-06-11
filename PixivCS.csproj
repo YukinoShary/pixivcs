@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.8.6.1-dev</Version>
+    <Version>0.8.7-dev</Version>
     <Authors>YukinoShary &amp; frg2089 &amp; sovetskyfish</Authors>
     <Company>YukinoShary &amp; frg2089 &amp; sovetskyfish</Company>
     <Description>C# version of Pixiv API in .NET Standard 2.0.</Description>
@@ -12,8 +12,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Pixiv PixivAPI</PackageTags>
     <OutputType>Library</OutputType>
-    <AssemblyVersion>0.8.6.1</AssemblyVersion>
-    <FileVersion>0.8.6.1</FileVersion>
+    <AssemblyVersion>0.8.7.0</AssemblyVersion>
+    <FileVersion>0.8.7.0</FileVersion>
     <PackageId>PixivCS_Alter</PackageId>
   </PropertyGroup>
   <ItemGroup>
