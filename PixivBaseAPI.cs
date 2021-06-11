@@ -173,7 +173,10 @@ namespace PixivCS
                             else
                             {
                                 var pair = header.Split(new[] { ": " }, StringSplitOptions.None);
-                                headersDictionary.Add(pair[0], pair[1]);
+                                if (pair[0].Equals("Set-Cookie") && headersDictionary.ContainsKey("Set-Cookie"))
+                                    headersDictionary["Set-Cookie"] = headersDictionary["Set-Cookie"] + ", " + pair[1];
+                                else
+                                    headersDictionary.Add(pair[0], pair[1]);
                             }
                         }
                         if (headersDictionary.ContainsKey("Content-Encoding") &&
